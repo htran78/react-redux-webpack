@@ -1,7 +1,15 @@
+const path = require('path')
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
+  entry: {
+    bundle: './src/index.js'
+  },
+  output: {
+    path: path.join(__dirname, 'dist'),
+    filename: '[name].[hash].js'
+  },
   module: {
     rules: [
       {
@@ -12,7 +20,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(css|scss)$/,
+        test: /\.(s?css)$/,
         exclude: /node_modules/,
         use: [
           MiniCssExtractPlugin.loader,
@@ -28,14 +36,24 @@ module.exports = {
       },
     ],
   },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'common',
+          chunks: 'all'
+        }
+      }
+    }
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: "./src/index.html",
       filename: "index.html"
     }),
     new MiniCssExtractPlugin({
-      filename: "[name].css",
-      chunkFilename: "[id].css"
+      filename: "[name].[hash].css",
     }),
   ],
 }
